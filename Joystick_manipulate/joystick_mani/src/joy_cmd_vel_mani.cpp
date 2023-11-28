@@ -3,7 +3,8 @@
 #include <geometry_msgs/Twist.h>
 #include <sensor_msgs/Joy.h>
 #include <cmath>
-#include <joystick_mani/mydmxel.h>
+#include <tutorial_msgs/mydmxel.h>
+
 
 #define ANGULAR1_MAX 10.0  //각속도1의 최댓값 10.0 ~ -10.0
 #define ANGULAR2_MAX 10.0  //각속도2의 최댓값 10.0 ~ -10.0
@@ -51,7 +52,7 @@ moter calculate_angle(float x, float y, float z,int l1, int l2){
   dmxel.mo1=val2dy(theta1);
   dmxel.mo2=val2dy(theta2);
   dmxel.mo3=val2dy(theta3);
-  dmxel.mo4=val2dy(theta1+theta2-1.5708);
+  dmxel.mo4=val2dy(theta2+theta3-1.5708);
   dmxel.theta=theta1+theta2;
   return dmxel;
 }
@@ -106,13 +107,13 @@ private:
 
 Joy_cmd_vel_mani::Joy_cmd_vel_mani()
 {
-  vel_pub_ = n.advertise<joystick_mani::mydmxel>("/cmd_vel",1000);
+  vel_pub_ = n.advertise<tutorial_msgs::mydmxel>("/hello",1000);
   joy_sub_ = n.subscribe<sensor_msgs::Joy>("joy", 10, &Joy_cmd_vel_mani::joyCallback, this);
 }
 
 void Joy_cmd_vel_mani::operate()
 {
-    joystick_mani::mydmxel msg;
+    tutorial_msgs::mydmxel msg;
 
   //최대길이 체크
   float checkbuf= sqrt((crt_arm_x*crt_arm_x)+(crt_arm_y*crt_arm_y)+(crt_arm_z*crt_arm_z));
@@ -136,8 +137,8 @@ if(check==true){
  // if(init_grip==1){crt_init_grip=init_grip;}
  // if(init_ride==1){crt_init_ride=init_ride;}
  // if(right_angle==1){crt_right_angle=right_angle;} 
-  crt_grip+=SENSITIVITY *((grip_open-1)/2);
-  crt_grip+=SENSITIVITY *((1-grip_close)/2);
+  crt_grip+=((grip_open-1)/2);
+  crt_grip+=((1-grip_close)/2);
   
   //최대값 제한
   crt_arm_z=MAXtoMIN(crt_arm_z,10);
@@ -182,11 +183,11 @@ if(r4no==1||crt_r4no==1){
   }
 
 
-msg.moter1=dmx.mo1;
-msg.moter2=dmx.mo2;
-msg.moter3=dmx.mo3;
-msg.moter4=dmx.mo4;
-msg.moter5=dmx.mo5;
+msg.motor1=dmx.mo1;
+msg.motor2=dmx.mo2;
+msg.motor3=dmx.mo3;
+msg.motor4=dmx.mo4;
+msg.motor5=dmx.mo5;
 
 vel_pub_.publish(msg);
 
